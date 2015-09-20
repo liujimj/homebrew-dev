@@ -58,7 +58,7 @@ class Quantlib < Formula
       args << "--enable-openmp"
     end
 
-    args = []
+    args = Array.new
     args << "--enable-error-lines" if build.with? "error-lines"
     args << "--enable-error-functions" if build.with? "error-functions"
     args << "--enable-tracing" if build.with? "tracing"
