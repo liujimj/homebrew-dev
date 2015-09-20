@@ -20,23 +20,54 @@ class Quantlib < Formula
   end
 
   option :cxx11
+  option "with-openmp", "Enable OpenMPI support (gcc only)."
+  option "with-error-lines", "File and line information is added to the error messages thrown by the library."
+  option "with-error-functions", "Current function information is added to the error messages thrown by the library."
+  option "with-tracing", "Tacing messages might be emitted by the library depending on run-time settings. Enabling this option can degrade performance."
+  option "with-indexed-coupons", "Indexed coupons (see the documentation) are used in floating legs. If disabled (the default), par coupons are used."
+  option "with-negative-rates", "If enabled (the default), negative yield rates are allowed.  If disabled, some features (notably, curve bootstrapping) will throw when negative rates are found."
+  option "with-extra-safety-checks"
+  option "with-sessions", "If enabled, extra run-time checks are added to a few functions. This can prevent their inlining and degrade performance."
+  option "with-examples", "If enabled, singletons will return different instances for different sessions. You will have to provide and link with the library a sessionId() function in namespace QuantLib, returning a different session id for each session."
+  option "with-benchmark", "If enabled, examples are built and installed when make and make install are invoked. If disabled (the default) they are built but not installed."
 
   if build.cxx11?
-    depends_on "boost" => "c++11"
+    if build.with? "openmp"
+      depends_on "boost" => ["c++11", "with-mpi"]
+    else
+      depends_on "boost" => "c++11"
+    end
   else
     depends_on "boost"
   end
 
   def install
+    args = ["-j#{ENV.make_jobs}"]
+    ENV["MAKEFLAGS"] = "-j#{ENV.make_jobs}"
+
     ENV.cxx11 if build.cxx11?
 
-    # Users have reported linking problems under Mac OS X 10.9
-    if MacOS.version == "10.9"
+    # A workaround for the reported linking problems under Mac OS X 10.9 (Mavericks)
+    if MacOS.version == :mavericks
       ENV['CXXFLAGS'] = ENV['LDFLAGS'] = "-stdlib=libstdc++ -mmacosx-version-min=10.6"
     end
 
-    args = ["-j#{ENV.make_jobs}"]
-    ENV["MAKEFLAGS"] = "-j#{ENV.make_jobs}"
+    if build.with? "openmp"
+      if ENV.compiler == :clang
+        opoo "OpenMP support will not be enabled."
+      end
+      args << "--enable-openmp"
+    end
+
+    args << "--enable-error-lines" if build.with? "error-lines"
+    args << "--enable-error-functions" if build.with? "error-functions"
+    args << "--enable-tracing" if build.with? "tracing"
+    args << "--enable-indexed-coupons" if build.with? "indexed-coupons"
+    args << "--enable-negative-rates" if build.with? "negative-rates"
+    args << "--enable-extra-safety-checks" if build.with? "extra-safety-checks"
+    args << "--enable-sessions" if build.with? "sessions"
+    args << "--enable-examples" if build.with? "examples"
+    args << "--enable-benchmark" if build.with? "benchmark"    
 
     if build.head?
       Dir.chdir "QuantLib"
@@ -46,7 +77,7 @@ class Quantlib < Formula
                           "--prefix=#{prefix}",
                           "--enable-static",
                           "--with-lispdir=#{share}/emacs/site-lisp/quantlib"
-    system "make", "-j#{ENV.make_jobs}", "install"
+    system "make", *args, "install"
   end
 
   test do
