@@ -33,7 +33,7 @@ class Quantlib < Formula
 
   if build.cxx11?
     if build.with? "openmp"
-      depends_on "boost" => ["c++11", "with-mpi"]
+      depends_on "boost" => ["c++11", "with-mpi", "without-single"]
     else
       depends_on "boost" => "c++11"
     end
