@@ -95,7 +95,7 @@ class Quantlib < Formula
     system "make", "-j#{ENV.make_jobs}", "CXXFLAGS=#{ENV.cxxflags}", "LDFLAGS=#{ENV.ldflags}", "install"
 
     ohai "You can optionally run a test to check whether QuantLib has been correctly installed:"
-    ohai "$ brew test --debug --verbose mmizutani/quantlib/quantlib"
+    ohai "$ brew test --debug --verbose mmizutani/dev/quantlib"
   end
 
   test do
