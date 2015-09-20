@@ -54,11 +54,9 @@ class Quantlib < Formula
     # https://github.com/homebrew/homebrew/issues/23483
     # https://github.com/rakshasa/libtorrent/issues/47
     if MacOS.version >= :mavericks && ENV.compiler == :clang
-      #ENV.libstdcxx
       #https://github.com/Homebrew/homebrew/blob/e64f929dc7b38cdfaf7f7695bd597b0bf7b4db20/Library/ENV/4.3/cc#L205
       ENV.append "CXXFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
       ENV.append "LDFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
-      #ENV["HOMEBREW_CC"] = "-j#{ENV.make_jobs}"
     end
 
     args = [
