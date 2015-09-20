@@ -83,6 +83,7 @@ class Quantlib < Formula
 
   test do
     system "#{bin}/quantlib-config", "--prefix=#{prefix}", "--libs", "--cflags"
+    system "#{bin}/quantlib-test-suite", "--prefix=#{prefix}", "--libs", "--cflags"
 
     (testpath/"test.cpp").write <<-'EOS'.undent
       #include <ql/quantlib.hpp>
