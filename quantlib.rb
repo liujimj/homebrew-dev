@@ -28,10 +28,10 @@ class Quantlib < Formula
   option "with-negative-rates", "If enabled (the default), negative yield rates are allowed.  If disabled, some features (notably, curve bootstrapping) will throw when negative rates are found."
   option "with-extra-safety-checks"
   option "with-sessions", "If enabled, extra run-time checks are added to a few functions. This can prevent their inlining and degrade performance."
+  option "with-tss", "If enabled, singletons will return thread-local instances."
+  option "with-thread-safe-observer-pattern", "If enabled, a thread safe observer pattern will be used."
   option "with-examples", "If enabled, singletons will return different instances for different sessions. You will have to provide and link with the library a sessionId() function in namespace QuantLib, returning a different session id for each session."
   option "with-benchmark", "If enabled, examples are built and installed when make and make install are invoked. If disabled (the default) they are built but not installed."
-  option "with-tss",
-  option "with-thread-safe-observer-pattern"
 
   if build.cxx11?
     if build.with? "openmp"
@@ -45,8 +45,6 @@ class Quantlib < Formula
   end
 
   def install
-    #ENV["MAKEFLAGS"] = "-j#{ENV.make_jobs}"
-
     ENV.cxx11 if build.cxx11?
 
     # Fix for the C++ runtime library mismatch on Mac OS X 10.9 (Mavericks) and beyond.
@@ -60,6 +58,7 @@ class Quantlib < Formula
       #https://github.com/Homebrew/homebrew/blob/e64f929dc7b38cdfaf7f7695bd597b0bf7b4db20/Library/ENV/4.3/cc#L205
       ENV.append "CXXFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
       ENV.append "LDFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
+      #ENV["HOMEBREW_CC"] = "-j#{ENV.make_jobs}"
     end
 
     args = [
@@ -84,10 +83,10 @@ class Quantlib < Formula
     args << "--enable-negative-rates" if build.with? "negative-rates"
     args << "--enable-extra-safety-checks" if build.with? "extra-safety-checks"
     args << "--enable-sessions" if build.with? "sessions"
-    args << "--enable-examples" if build.with? "examples"
-    args << "--enable-benchmark" if build.with? "benchmark"
     args << "--enable-tss" if build.with? "tss"
     args << "--enable-thread-safe-observer-pattern" if build.with? "thread-safe-observer-pattern"
+    args << "--enable-examples" if build.with? "examples"
+    args << "--enable-benchmark" if build.with? "benchmark"
 
     if build.head?
       Dir.chdir "QuantLib"
