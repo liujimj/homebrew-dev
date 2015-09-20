@@ -55,6 +55,7 @@ class Quantlib < Formula
     # https://github.com/rakshasa/libtorrent/issues/47
     if MacOS.version >= :mavericks && ENV.compiler == :clang
       #ENV.libstdcxx
+      #https://github.com/Homebrew/homebrew/blob/e64f929dc7b38cdfaf7f7695bd597b0bf7b4db20/Library/ENV/4.3/cc#L205
       ENV.append "CXXFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
       ENV.append "LDFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
     end
@@ -71,8 +72,9 @@ class Quantlib < Formula
     if build.with? "openmp"
       if ENV.compiler == :clang
         opoo "OpenMP support will not be enabled as Clang doesn't support OpenMP. If you need OpenMP support you may want to run brew reinstall gcc --without-multilib && brew reinstall open-mpi --c++11 --cc=gcc-5 && brew reinstall boost --c++11 --cc=gcc-5 --with-mpi --without-single --build-from-source"
+      else
+        args << "--enable-openmp"
       end
-      args << "--enable-openmp"
     end
 
     args << "--enable-error-lines" if build.with? "error-lines"
@@ -90,7 +92,7 @@ class Quantlib < Formula
       system "./autogen.sh"
     end
     system "./configure", *args                          
-    system "make", "-j#{ENV.make_jobs}", "install"
+    system "make", "-j#{ENV.make_jobs}", "CXXFLAGS=#{ENV.cflags}", "LDFLAGS=#{ENV.ldflags}", "install"
 
     ohai "You can optionally run a test to check whether QuantLib has been correctly installed:"
     ohai "$ brew test --debug --verbose mmizutani/quantlib/quantlib"
