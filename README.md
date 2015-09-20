@@ -2,6 +2,15 @@
 
 Unofficial alternative homebrew recipe for QuantLib
 
+## Prerequisites
+
+```sh
+$ brew reinstall gcc --without-multilib
+$ brew reinstall open-mpi --c++11 --cc=gcc-5
+$ brew reinstall boost --c++11 --cc=gcc-5 --with-mpi --without-single --build-from-source
+$ alias brew='HOMEBREW_CC=gcc-5 HOMEBREW_CXX=g++-5 brew' # compile with g++ instead of clang++
+```
+
 ## Installing
 
 ```sh
