@@ -1,6 +1,6 @@
 # homebrew-quantlib
 
-Unofficial homebrew recipe for QuantLib
+Unofficial alternative homebrew recipe for QuantLib
 
 ## Installing:
 

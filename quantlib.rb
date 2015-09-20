@@ -83,5 +83,7 @@ class Quantlib < Formula
 
   test do
     system bin/"quantlib-config", "--prefix=#{prefix}", "--libs", "--cflags"
+    system "g++", "-I/usr/local/include/", "-I/usr/local/include/boost", "BermudanSwaption.cpp", "-o bermudanswaption", "-L/usr/local/lib/", "-lQuantLib"
+    system "./bermudanswaption""
   end
 end
