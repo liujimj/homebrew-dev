@@ -11,7 +11,7 @@ $ brew install mmizutani/quantlib/quantlib
 $ brew test --debug --verbose mmizutani/quantlib/quantlib
 ```
 
-Both the static and dynamic libraries are built and put in `/usr/local/Cellar/quantlib/1.6.2/lib`.
+By default, both the static and dynamic libraries are built and put in `/usr/local/Cellar/quantlib/1.6.2/lib`.
 
 
 ## Installing with options
