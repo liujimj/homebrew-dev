@@ -35,6 +35,9 @@ class Quantlib < Formula
       ENV['CXXFLAGS'] = ENV['LDFLAGS'] = "-stdlib=libstdc++ -mmacosx-version-min=10.6"
     end
 
+    args = ["-j#{ENV.make_jobs}"]
+    ENV["MAKEFLAGS"] = "-j#{ENV.make_jobs}"
+
     if build.head?
       Dir.chdir "QuantLib"
       system "./autogen.sh"
