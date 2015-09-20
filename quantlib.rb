@@ -33,6 +33,7 @@ class Quantlib < Formula
 
   if build.cxx11?
     if build.with? "openmp"
+      depends_on "gcc" => ["without-multilib"]
       depends_on "boost" => ["c++11", "with-mpi", "without-single"]
     else
       depends_on "boost" => "c++11"
@@ -50,12 +51,12 @@ class Quantlib < Formula
     if MacOS.version <= :mavericks
       ENV['CXXFLAGS'] = ENV['LDFLAGS'] = "-stdlib=libstdc++ -mmacosx-version-min=10.6"
     end
-    
+
     args = Array.new
 
     if build.with? "openmp"
       if ENV.compiler == :clang
-        opoo "OpenMP support will not be enabled."
+        opoo "OpenMP support will not be enabled. If you need OpenMP support you may want to run brew reinstall gcc --without-multilib"  
       end
       args << "--enable-openmp"
     end
