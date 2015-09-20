@@ -84,8 +84,6 @@ class Quantlib < Formula
   test do
     system "#{bin}/quantlib-config", "--prefix=#{prefix}", "--libs", "--cflags"
 
-    #system "g++", "-I/usr/local/include/", "-I/usr/local/include/boost", "BermudanSwaption.cpp", "-o bermudanswaption", "-L/usr/local/lib/", "-lQuantLib"
-    #system "./bermudanswaption"
     (testpath/"test.cpp").write <<-'EOS'.undent
       #include <ql/quantlib.hpp>
       #include <boost/timer.hpp>
@@ -458,5 +456,8 @@ class Quantlib < Formula
     EOS
     system ENV.cxx, "test.cpp", "-lQuantLib", "-o", "test"
     system "./test"
+
+    ohai "You can optionally run a test to check whether QuantLib has been correctly installed:"
+    ohai "$ brew test --debug --verbose mmizutani/quantlib/quantlib"
   end
 end
