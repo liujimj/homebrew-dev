@@ -92,7 +92,7 @@ class Quantlib < Formula
       system "./autogen.sh"
     end
     system "./configure", *args                          
-    system "make", "-j#{ENV.make_jobs}", "CXXFLAGS=#{ENV.cflags}", "LDFLAGS=#{ENV.ldflags}", "install"
+    system "make", "-j#{ENV.make_jobs}", "CXXFLAGS=#{ENV.cxxflags}", "LDFLAGS=#{ENV.ldflags}", "install"
 
     ohai "You can optionally run a test to check whether QuantLib has been correctly installed:"
     ohai "$ brew test --debug --verbose mmizutani/quantlib/quantlib"
