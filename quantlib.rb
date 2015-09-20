@@ -56,7 +56,7 @@ class Quantlib < Formula
 
     if build.with? "openmp"
       if ENV.compiler == :clang
-        opoo "OpenMP support will not be enabled. If you need OpenMP support you may want to run brew reinstall gcc --without-multilib"  
+        opoo "OpenMP support will not be enabled. If you need OpenMP support you may want to run brew reinstall gcc --without-multilib && brew reinstall boost --with-mpi --without-single"  
       end
       args << "--enable-openmp"
     end
@@ -81,13 +81,15 @@ class Quantlib < Formula
                           "--enable-static",
                           "--with-lispdir=#{share}/emacs/site-lisp/quantlib"
     system "make", "-j#{ENV.make_jobs}", "install"
+
+    ohai "You can optionally run a test to check whether QuantLib has been correctly installed:"
+    ohai "$ brew test --debug --verbose mmizutani/quantlib/quantlib"
   end
 
   test do
     system "#{bin}/quantlib-config", "--prefix=#{prefix}", "--libs", "--cflags"
-    system "#{bin}/quantlib-test-suite", "--prefix=#{prefix}", "--libs", "--cflags"
 
-    (testpath/"test.cpp").write <<-'EOS'.undent
+    (testpath/"bermudanswaption.cpp").write <<-'EOS'.undent
       #include <ql/quantlib.hpp>
       #include <boost/timer.hpp>
       #include <iostream>
@@ -457,10 +459,12 @@ class Quantlib < Formula
           }
       }
     EOS
-    system ENV.cxx, "test.cpp", "-lQuantLib", "-o", "test"
-    system "./test"
 
-    ohai "You can optionally run a test to check whether QuantLib has been correctly installed:"
-    ohai "$ brew test --debug --verbose mmizutani/quantlib/quantlib"
+    gccargs = Array.new
+    gccargs << "-std=c++11" if if build.cxx11?
+    gccargs << "-fopenmp" if build.with? "openmp" && ENV.compiler == :gcc
+
+    system ENV.cxx, *gccargs, "bermudanswaption.cpp", "-lQuantLib", "-o", "bermudanswaption"
+    system "./bermudanswaption"
   end
 end
