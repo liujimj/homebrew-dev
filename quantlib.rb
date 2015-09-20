@@ -42,13 +42,12 @@ class Quantlib < Formula
   end
 
   def install
-    args = ["-j#{ENV.make_jobs}"]
-    ENV["MAKEFLAGS"] = "-j#{ENV.make_jobs}"
+    #ENV["MAKEFLAGS"] = "-j#{ENV.make_jobs}"
 
     ENV.cxx11 if build.cxx11?
 
-    # A workaround for the reported linking problems under Mac OS X 10.9 (Mavericks)
-    if MacOS.version == :mavericks
+    # A workaround for the reported linking problems under Mac OS X 10.9 (Mavericks) or below
+    if MacOS.version <= :mavericks
       ENV['CXXFLAGS'] = ENV['LDFLAGS'] = "-stdlib=libstdc++ -mmacosx-version-min=10.6"
     end
 
@@ -59,6 +58,7 @@ class Quantlib < Formula
       args << "--enable-openmp"
     end
 
+    args = []
     args << "--enable-error-lines" if build.with? "error-lines"
     args << "--enable-error-functions" if build.with? "error-functions"
     args << "--enable-tracing" if build.with? "tracing"
@@ -73,11 +73,12 @@ class Quantlib < Formula
       Dir.chdir "QuantLib"
       system "./autogen.sh"
     end
-    system "./configure", "--disable-dependency-tracking",
+    system "./configure", *args,
+                          "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
                           "--enable-static",
                           "--with-lispdir=#{share}/emacs/site-lisp/quantlib"
-    system "make", *args, "install"
+    system "make", "-j#{ENV.make_jobs}", "install"
   end
 
   test do
