@@ -8,7 +8,7 @@ Unofficial alternative homebrew recipe for QuantLib
 $ brew tap mmizutani/quantlib
 $ brew info mmizutani/quantlib/quantlib
 $ brew install mmizutani/quantlib/quantlib
-$ brew test mmizutani/quantlib/quantlib
+$ brew test --debug mmizutani/quantlib/quantlib
 ```
 
 ## Installing with options:
