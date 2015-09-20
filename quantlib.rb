@@ -50,6 +50,8 @@ class Quantlib < Formula
     if MacOS.version <= :mavericks
       ENV['CXXFLAGS'] = ENV['LDFLAGS'] = "-stdlib=libstdc++ -mmacosx-version-min=10.6"
     end
+    
+    args = Array.new
 
     if build.with? "openmp"
       if ENV.compiler == :clang
@@ -58,7 +60,6 @@ class Quantlib < Formula
       args << "--enable-openmp"
     end
 
-    args = Array.new
     args << "--enable-error-lines" if build.with? "error-lines"
     args << "--enable-error-functions" if build.with? "error-functions"
     args << "--enable-tracing" if build.with? "tracing"
