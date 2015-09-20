@@ -47,16 +47,30 @@ class Quantlib < Formula
 
     ENV.cxx11 if build.cxx11?
 
-    # A workaround for the reported linking problems under Mac OS X 10.9 (Mavericks) or below
-    if MacOS.version <= :mavericks
-      ENV['CXXFLAGS'] = ENV['LDFLAGS'] = "-stdlib=libstdc++ -mmacosx-version-min=10.6"
+    # Fix for the C++ runtime library mismatch on Mac OS X 10.9 (Mavericks) and beyond.
+    # From OS X 10.9, gcc support is no longer available, and you have to use Apple's clang++.
+    # When using the clang++ compiler, you need to link to the older runtime library (GCC based libstdc++, and not the clang++ default of libc++)
+    # https://github.com/bitcoin/bitcoin/issues/3228#issuecomment-46128018
+    # https://github.com/homebrew/homebrew/issues/23483
+    # https://github.com/rakshasa/libtorrent/issues/47
+    if MacOS.version >= :mavericks && ENV.compiler == :clang
+      #ENV.libstdcxx
+      ENV.append "CXXFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
+      ENV.append "LDFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
     end
 
-    args = Array.new
+    args = [
+      "--disable-dependency-tracking",
+      "--prefix=#{prefix}",
+      "--enable-static",
+      "--with-lispdir=#{share}/emacs/site-lisp/quantlib",
+      "--CC=#{ENV.cc}",
+      "--CXX=#{ENV.cxx}"
+    ]
 
     if build.with? "openmp"
       if ENV.compiler == :clang
-        opoo "OpenMP support will not be enabled. If you need OpenMP support you may want to run brew reinstall gcc --without-multilib && brew reinstall boost --with-mpi --without-single"  
+        opoo "OpenMP support will not be enabled as Clang doesn't support OpenMP. If you need OpenMP support you may want to run brew reinstall gcc --without-multilib && brew reinstall open-mpi --c++11 --cc=gcc-5 && brew reinstall boost --c++11 --cc=gcc-5 --with-mpi --without-single --build-from-source"
       end
       args << "--enable-openmp"
     end
@@ -75,11 +89,7 @@ class Quantlib < Formula
       Dir.chdir "QuantLib"
       system "./autogen.sh"
     end
-    system "./configure", *args,
-                          "--disable-dependency-tracking",
-                          "--prefix=#{prefix}",
-                          "--enable-static",
-                          "--with-lispdir=#{share}/emacs/site-lisp/quantlib"
+    system "./configure", *args                          
     system "make", "-j#{ENV.make_jobs}", "install"
 
     ohai "You can optionally run a test to check whether QuantLib has been correctly installed:"
@@ -460,11 +470,11 @@ class Quantlib < Formula
       }
     EOS
 
-    gccargs = Array.new
-    gccargs << "-std=c++11" if if build.cxx11?
-    gccargs << "-fopenmp" if build.with? "openmp" && ENV.compiler == :gcc
+    cxxargs = Array.new
+    cxxargs << "-std=c++11" if build.cxx11?
+    cxxargs << "-fopenmp" if build.with? "openmp" && ENV.compiler == :gcc
 
-    system ENV.cxx, *gccargs, "bermudanswaption.cpp", "-lQuantLib", "-o", "bermudanswaption"
+    system ENV.cxx, *cxxargs, "bermudanswaption.cpp", "-lQuantLib", "-o", "bermudanswaption"
     system "./bermudanswaption"
   end
 end

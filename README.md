@@ -18,14 +18,14 @@ By default, both the static and dynamic libraries are built and put in `/usr/loc
 
 ```sh
 $ brew install --HEAD mmizutani/quantlib/quantlib
-$ brew install --with-openmp mmizutani/quantlib/quantlib
-$ brew install --with-openmp --verbose --debug mmizutani/quantlib/quantlib
+$ brew install --cc=gcc-5 --c++11 --with-openmp mmizutani/quantlib/quantlib
 ```
 
 ## Debugging
 
 ```sh
 $ brew install --verbose --debug mmizutani/quantlib/quantlib
+$ brew install --cc=gcc-5 --c++11 --with-openmp --verbose --debug mmizutani/quantlib/quantlib
 $ brew audit --strict --online mmizutani/quantlib/quantlib
 $ brew edit mmizutani/quantlib/quantlib
 ```
