@@ -5,11 +5,12 @@ Unofficial alternative homebrew recipe for QuantLib
 ## Prerequisites
 
 ```sh
+$ brew --env
+$ brew --config
 $ brew reinstall gcc --without-multilib
+$ alias brew='HOMEBREW_CC=gcc-5 HOMEBREW_CXX=g++-5 brew' # compile with g++ instead of clang++
 $ brew reinstall open-mpi --c++11 --cc=gcc-5
 $ brew reinstall boost --c++11 --cc=gcc-5 --with-mpi --without-single --build-from-source
-$ alias brew='HOMEBREW_CC=gcc-5 HOMEBREW_CXX=g++-5 brew' # compile with g++ instead of clang++
-$ brew --env
 ```
 
 ## Installing
@@ -21,7 +22,7 @@ $ brew install mmizutani/dev/quantlib
 $ brew test --debug --verbose mmizutani/dev/quantlib
 ```
 
-By default, both the static and dynamic libraries are built and put in `/usr/local/Cellar/quantlib/1.6.2/lib`.
+By default, both the static and dynamic libraries are built and placed in `/usr/local/Cellar/quantlib/1.6.2/lib`.
 
 
 ## Installing with options

@@ -14,6 +14,7 @@ class Quantlib < Formula
 
   bottle do
     cellar :any
+    sha256 "a127ad7e96474ccc5ce9222809dc16f8d788f7ce0e37e016aef4c5b95b27dfb2" => :el_capitan
     sha256 "128bb13a29b675d4d918fe846b6898c16dcff7bdc68ccb7b02b9534514085d76" => :yosemite
     sha256 "6cfa46314ac7485a695b955caaf1f695143f4d992feedee46b7a35a6085dce9d" => :mavericks
     sha256 "b4a92d817a27f6d3d848d3ef51db76646ade2f372a050116859ab3f6d8be6b43" => :mountain_lion
@@ -44,6 +45,8 @@ class Quantlib < Formula
     depends_on "boost"
   end
 
+  fails_with :llvm
+
   def install
     ENV.cxx11 if build.cxx11?
 
@@ -53,10 +56,14 @@ class Quantlib < Formula
     # https://github.com/bitcoin/bitcoin/issues/3228#issuecomment-46128018
     # https://github.com/homebrew/homebrew/issues/23483
     # https://github.com/rakshasa/libtorrent/issues/47
+    # http://caffe.berkeleyvision.org/install_osx.html
     if MacOS.version >= :mavericks && ENV.compiler == :clang
       #https://github.com/Homebrew/homebrew/blob/e64f929dc7b38cdfaf7f7695bd597b0bf7b4db20/Library/ENV/4.3/cc#L205
+      ENV.append "CFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
       ENV.append "CXXFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
-      ENV.append "LDFLAGS", "-stdlib=libstdc++ -mmacosx-version-min=10.6"
+      ENV.append "LDFLAGS", "-stdlib=libstdc++ -lstdc++ -mmacosx-version-min=10.6"
+      # The following is necessary because libtool likes to strip LDFLAGS:
+      ENV["CXX"] = "/usr/bin/clang++ -stdlib=libstdc++"
     end
 
     args = [
@@ -68,7 +75,7 @@ class Quantlib < Formula
 
     if build.with? "openmp"
       if ENV.compiler == :clang
-        opoo "OpenMP support will not be enabled as Clang doesn't support OpenMP. If you need OpenMP support you may want to run brew reinstall gcc --without-multilib && brew reinstall open-mpi --c++11 --cc=gcc-5 && brew reinstall boost --c++11 --cc=gcc-5 --with-mpi --without-single --build-from-source"
+        opoo "OpenMP support will not be enabled as the Clang compiler doesn't support OpenMP. If you need OpenMP support you may un brew reinstall gcc --without-multilib && brew reinstall open-mpi --c++11 --cc=gcc-5 && brew reinstall boost --c++11 --cc=gcc-5 --with-mpi --without-single --build-from-source".
       else
         args << "--enable-openmp"
       end
